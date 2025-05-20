@@ -1,0 +1,401 @@
+unit UnitEntradaSerrada;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ImgList, ComCtrls, ToolWin, StdCtrls, DBCtrls, Mask,
+  EDBZero, ExtCtrls, Buttons, Grids, DBGrids, DB, IBCustomDataSet, IBTable,
+  EChkCPF, EChkCNPJ, dbAleGrids, EDBNum, EDBDate, ToolEdit, CurrEdit,
+  SSSpin, jpeg, EDateEd;
+
+type
+  TfrmEntradaSerrada = class(TForm)
+    Panel2: TPanel;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    DBNavigator1: TDBNavigator;
+    BitBtn4: TBitBtn;
+    BitBtn115: TBitBtn;
+    ImageList1: TImageList;
+    GroupBox2: TGroupBox;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    g: TGroupBox;
+    DBGrid2: TDBGrid;
+    Panel3: TPanel;
+    BitBtn10: TBitBtn;
+    BitBtn11: TBitBtn;
+    BitBtn12: TBitBtn;
+    BitBtn14: TBitBtn;
+    DBGrid3: TDBGrid;
+    Image1: TImage;
+    Label1: TLabel;
+    GroupBox1: TGroupBox;
+    Label5: TLabel;
+    quantidade: TLabel;
+    nota: TSpinEditXP;
+    DBEDIT6: TEdit;
+    data: TEvDateEdit;
+    Label6: TLabel;
+    pecas: TLabel;
+    fornecedor: TEdit;
+    TOTNOTA: TLabel;
+    Label8: TLabel;
+    Label7: TLabel;
+    unitario: TEvDBNumEdit;
+    procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn115Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure TabSheet1Show(Sender: TObject);
+    procedure MaskEdit5Exit(Sender: TObject);
+    procedure MaskEdit4Exit(Sender: TObject);
+    procedure TabSheet2Show(Sender: TObject);
+    procedure BitBtn10Click(Sender: TObject);
+    procedure BitBtn11Click(Sender: TObject);
+    procedure pesoliquidoExit(Sender: TObject);
+    procedure BitBtn12Click(Sender: TObject);
+    procedure dataEnter(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure notaExit(Sender: TObject);
+    procedure BitBtn14Click(Sender: TObject);
+    procedure EvDateEdit1Enter(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmEntradaSerrada: TfrmEntradaSerrada;
+
+implementation
+
+uses UnitDM, UnitPrincipal, UnitEntradaTorosProdutos, UnitSobre,
+  UnitPesquisaEntrada, UnitEntradaToros, UnitEntradaSerradaProdutos;
+
+
+{$R *.dfm}
+
+procedure tbDBDeleteAll(const DataSet: TDataSet);
+begin
+  with DataSet do
+  while RecordCount > 0 do
+  Delete;
+end;
+
+procedure TfrmEntradaSerrada.BitBtn4Click(Sender: TObject);
+begin
+DM.QFornecedor.Open;
+if DM.QFornecedor.RecordCount = 0 then
+begin
+DM.QFornecedor.Close;
+Application.MessageBox('Não há Fornecedor(es) Cadastrado(s), Verifíque!', 'Entrada', mb_Ok + mb_IconExclamation);
+end
+else
+begin
+bitbtn4.Enabled := False;
+DM.QFornecedor.Close;
+DM.QMunicipio.Open;
+frmPesquisa.ShowModal;
+end;
+end;
+
+procedure TfrmEntradaSerrada.BitBtn115Click(Sender: TObject);
+var total, total1, total2 : Real;
+begin
+if DM.TESDISCRIMINACAO['SITUACAO']= '1' then
+begin
+Application.MessageBox('Não é possível escluir este produto, devido o mesmo ja estar incluso no movimento de saída!', 'Entrada', mb_Ok + mb_IconExclamation);
+end
+else
+begin
+if DM.TESDISCRIMINACAO['SITUACAO']= '0' then
+begin
+If Application.MessageBox('Deseja Excluir esse produto?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+   DM.TESDISCRIMINACAO.Delete;
+   total := 0;
+   total1 := 0;
+   total2:=0;
+
+   DM.TESDISCRIMINACAO.Filtered := False;
+   DM.TESDISCRIMINACAO.Close;
+   DM.TESDISCRIMINACAO.Filter := 'NFNUMERO = ' + QuotedStr(nota.Text)+ ' and CODIGOFORNECEDOR = ' + QuotedStr(DBEDIT6.Text);
+   DM.TESDISCRIMINACAO.Filtered := True;
+   DM.TESDISCRIMINACAO.Open;
+
+   DM.TESDISCRIMINACAO.Prior;
+   while not DM.TESDISCRIMINACAO.Eof do
+     begin
+        total1 := DM.TESDISCRIMINACAO['TOTALM3'] + total1 ;
+        total := DM.TESDISCRIMINACAO['QUANTIDADE'] + total ;
+        total2 := DM.TESDISCRIMINACAO['VALTOTAL'] + total2 ;
+        DM.TESDISCRIMINACAO.Next;
+     end;
+    quantidade.caption := FormatCurr('#0.000',total1);
+    pecas.caption := FormatCurr('#0',total);
+    TOTNOTA.caption := FormatCurr('#0.00',total2);
+     g.Caption := 'Produtos > ' + intTostr(DM.TESDISCRIMINACAO.RecordCount);
+end;
+end;
+end;
+end;
+
+
+procedure TfrmEntradaSerrada.BitBtn2Click(Sender: TObject);
+begin
+DM.TESDISCRIMINACAO.Cancel;
+DM.TESDISCRIMINACAO.Close;
+DM.QFornecedor.Close;
+DM.QMunicipio.Close;
+g.Caption := 'Produtos ';
+BitBtn4.Enabled := True;
+BitBtn10.Enabled := false;
+BitBtn11.Enabled := false;
+BitBtn14.Enabled := false;
+Data.Clear;
+DBGrid2.Visible := False;
+DBGrid3.Visible := True;
+nota.Text := '0';
+fornecedor.Text := '';
+data.Text:= '';
+quantidade.caption := '';
+pecas.caption := '';
+end;
+
+procedure TfrmEntradaSerrada.BitBtn3Click(Sender: TObject);
+begin
+g.Caption := 'Produtos ';
+   DM.TESDISCRIMINACAO.Filtered := False;
+DM.TESDISCRIMINACAO.Close;
+DM.TESDISCRIMINACAO1.Close;
+DM.QFornecedor.Close;
+DM.QEssencia.Close;
+DM.QMunicipio.Close;
+BitBtn4.Enabled := True;
+nota.Text := '0';
+fornecedor.Text := '';
+data.Text:= '';
+quantidade.Caption := '';
+pecas.caption := '';
+totnota.caption := '';
+    unitario.text := '';
+
+Close;
+
+end;
+
+
+
+procedure TfrmEntradaSerrada.FormShow(Sender: TObject);
+begin
+Self.Tag := 1;
+bitbtn4.SetFocus;
+end;
+
+procedure TfrmEntradaSerrada.TabSheet1Show(Sender: TObject);
+begin
+BitBtn2.Enabled := True;
+BitBtn4.Enabled := True;
+DM.QFornecedor.Close;
+end;
+
+procedure TfrmEntradaSerrada.MaskEdit5Exit(Sender: TObject);
+begin
+Application.MessageBox('CPF inválido ou digitado incorretamente, Verefique!', 'Informação', mb_Ok + mb_IconInformation);
+end;
+
+procedure TfrmEntradaSerrada.MaskEdit4Exit(Sender: TObject);
+begin
+Application.MessageBox('CNPJ inválido ou digitado incorretamente, Verefique!', 'Informação', mb_Ok + mb_IconInformation);
+end;
+
+procedure TfrmEntradaSerrada.TabSheet2Show(Sender: TObject);
+begin
+BitBtn2.Enabled := False;
+BitBtn4.Enabled := False;
+DM.QFornecedor.Open;
+DM.QFornecedor.Open;
+  with DM.QFornecedor do
+  	begin
+      Close;
+      SQL.Clear;
+      SQL.Add('Select * from Fornecedor Order by NOMEFORNECEDOR');
+      Open;
+    end;
+end;
+
+procedure TfrmEntradaSerrada.BitBtn10Click(Sender: TObject);
+begin
+DM.TESDISCRIMINACAO.Next;
+end;
+
+procedure TfrmEntradaSerrada.BitBtn11Click(Sender: TObject);
+begin
+DM.TESDISCRIMINACAO.Prior;
+end;
+
+procedure TfrmEntradaSerrada.pesoliquidoExit(Sender: TObject);
+begin
+if fornecedor.Text = '' then
+   	begin
+      exit;
+    end
+    else
+if nota.text = '000000' then
+    begin
+      Application.MessageBox('Numero da Nota Fiscal deve ser informada!', 'Lançamento', mb_Ok + mb_IconInformation);
+      nota.SetFocus;
+    end;
+
+if (fornecedor.Text <> '') and (nota.text <> '000000') then
+begin
+If Application.MessageBox('Deseja Inserir Produtos Agora?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+DM.QProduto.Open;
+DM.TESDISCRIMINACAO.Open;
+DM.TESDISCRIMINACAO.Append;
+frmEntradaSerradaProdutos.DBEDIT3.Text := DBEDit6.Text;
+frmEntradaSerradaProdutos.DBEDIT4.Text := nota.Text;
+frmEntradaSerradaProdutos.DBEDIT6.Text := fornecedor.Text;
+frmEntradaSerradaProdutos.Show;
+frmEntradaSerradaProdutos.DBEDIT1.SetFocus;
+end
+else
+
+end;
+end;
+
+
+
+
+procedure TfrmEntradaSerrada.BitBtn12Click(Sender: TObject);
+begin
+if fornecedor.Text = '' then
+   	begin
+      Application.MessageBox('Fornecedor deve ser informado!', 'Lançamento', mb_Ok + mb_IconInformation);
+      frmPesquisa.ShowModal;
+    end
+    else
+begin
+if nota.text = '0' then
+    begin
+      Application.MessageBox('Numero da Nota Fiscal deve ser informada!', 'Lançamento', mb_Ok + mb_IconInformation);
+      nota.SetFocus;
+      end;
+    end;
+
+if (fornecedor.Text <> '') and (nota.text <> '0') then
+begin
+DM.QProduto.Open;
+DM.TESDISCRIMINACAO.Open;
+DM.TESDISCRIMINACAO.Append;
+frmEntradaSerradaProdutos.DBEDIT3.Text := DBEDit6.Text;
+frmEntradaSerradaProdutos.DBEDIT4.Text := nota.Text;
+frmEntradaSerradaProdutos.DBEDIT6.Text := fornecedor.Text;
+frmEntradaSerradaProdutos.Showmodal;
+frmEntradaSerradaProdutos.EDITDATA.Text := data.Text;
+//frmEntradaSerradaProdutos.DBEDIT1.SetFocus;
+end
+else
+nota.SetFocus;
+end;
+
+procedure TfrmEntradaSerrada.dataEnter(Sender: TObject);
+begin
+Data.Text := DateToStr(now);
+end;
+
+
+
+procedure TfrmEntradaSerrada.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+Self.Tag := 0;
+end;
+
+
+
+procedure TfrmEntradaSerrada.notaExit(Sender: TObject);
+var total, total1, total2 : Real;
+begin
+if dbedit6.Text = '' then bitbtn4.Click;
+   DM.TESDISCRIMINACAO.Filtered := False;
+   DM.TESDISCRIMINACAO.Close;
+   DM.TESDISCRIMINACAO.Filter := 'NFNUMERO = ' + QuotedStr(nota.Text)+ ' and CODIGOFORNECEDOR = ' + QuotedStr(DBEDIT6.Text);
+   DM.TESDISCRIMINACAO.Filtered := True;
+   DM.TESDISCRIMINACAO.Open;
+
+begin
+   if DM.TESDISCRIMINACAO.RecordCount <> 0 then
+   begin
+   DBGrid3.Visible := False;
+   DBGrid2.Visible := True;
+   BitBtn10.Enabled := True;
+   BitBtn11.Enabled := True;
+   BitBtn14.Enabled := True;
+    unitario.Visible := true;
+
+     total := 0;
+     total1 := 0;
+     total2:=0;
+   DM.TESDISCRIMINACAO.First;
+   while not DM.TESDISCRIMINACAO.Eof do
+     begin
+        total := DM.TESDISCRIMINACAO['TOTALM3'] + total ;
+        total1 := DM.TESDISCRIMINACAO['QUANTIDADE'] + total1 ;
+        total2 := DM.TESDISCRIMINACAO['VALTOTAL'] + total2 ;
+        DM.TESDISCRIMINACAO.Next;
+     end;
+    quantidade.caption := FormatCurr('#0.0000',total);
+    pecas.caption := FormatCurr('#0',total1);
+    TOTNOTA.caption := FormatCurr('#0.00',total2);
+   g.Caption := 'Produtos > ' + intTostr(DM.TESDISCRIMINACAO.RecordCount);
+     If Application.MessageBox('Já possui lançamento para o numero de Nota Fiscal informado, do Fornecedor selecionado, Deseja Continuar?', 'Confirmação',
+     mb_YesNo + mb_ICONQUESTION) = idYes then
+        begin
+        exit;
+        end
+        else
+        begin
+        nota.Text := '0';
+   DM.TESDISCRIMINACAO.Filtered := False;
+   DM.TESDISCRIMINACAO.Close;
+        quantidade.Caption := '';
+        nota.SetFocus;
+        end
+   end;
+end;
+    g.Caption := 'Produtos > ' + intTostr(DM.TESDISCRIMINACAO.RecordCount);
+    pecas.Caption := '';
+    quantidade.Caption := '';
+    unitario.Visible := false;
+    totnota.Caption := '';
+
+    BitBtn10.Enabled := false;
+    BitBtn11.Enabled := false;
+    BitBtn14.Enabled := false;
+end;
+
+
+
+procedure TfrmEntradaSerrada.BitBtn14Click(Sender: TObject);
+begin
+DM.TESDISCRIMINACAO.EDIT;
+frmEntradaSerradaProdutos.Show;
+frmEntradaSerradaProdutos.DBEDIT1.SetFocus;
+end;
+
+procedure TfrmEntradaSerrada.EvDateEdit1Enter(Sender: TObject);
+begin
+Data.Text := DateToStr(now);
+end;
+
+end.

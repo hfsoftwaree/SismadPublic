@@ -1,0 +1,469 @@
+unit Unitdvpf;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ImgList, ComCtrls, ToolWin, XP_MenuBar, StdCtrls, DBCtrls, Mask,
+  EDBZero, ExtCtrls, Buttons, Grids, DBGrids, DB, IBCustomDataSet, IBTable,
+  EChkCPF, EChkCNPJ, EDBNum;
+
+type
+  TfrmDvpf = class(TForm)
+    Image1: TImage;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    Panel1: TPanel;
+    DBEdit9: TDBEdit;
+    DBEdit2: TDBEdit;
+    DBEdit1: TDBEdit;
+    DBComboBox2: TDBComboBox;
+    MaskEdit1: TMaskEdit;
+    DBEdit11: TDBEdit;
+    DBEdit8: TDBEdit;
+    DBEdit5: TDBEdit;
+    Panel2: TPanel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    DBN1: TDBNavigator;
+    BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
+    BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    Panel6: TPanel;
+    Panel7: TPanel;
+    Panel8: TPanel;
+    Panel9: TPanel;
+    DBComboBox1: TDBComboBox;
+    Panel13: TPanel;
+    Label1: TLabel;
+    GroupBox1: TGroupBox;
+    Edit1: TEdit;
+    DBGrid1: TDBGrid;
+    Panel11: TPanel;
+    Panel16: TPanel;
+    MaskEdit4: TMaskEdit;
+    DBEdit3: TDBEdit;
+    EvCheckCNPJ1: TEvCheckCNPJ;
+    EvCheckCPF1: TEvCheckCPF;
+    Panel5: TPanel;
+    MaskEdit5: TMaskEdit;
+    DBEdit6: TDBEdit;
+    DBEdit7: TDBEdit;
+    Panel17: TPanel;
+    DBComboBox3: TDBComboBox;
+    Panel10: TPanel;
+    DBEdit4: TDBEdit;
+    Panel12: TPanel;
+    DBComboBox4: TDBComboBox;
+    ImageList1: TImageList;
+    TabSheet3: TTabSheet;
+    Panel14: TPanel;
+    Panel18: TPanel;
+    Panel19: TPanel;
+    Panel20: TPanel;
+    Panel21: TPanel;
+    s: TDBGrid;
+    Panel22: TPanel;
+    B: TDBLookupComboBox;
+    E: TDBEdit;
+    D: TDBComboBox;
+    C: TEvDBNumEdit;
+    label2: TEvDBNumEdit;
+    DBN2: TDBNavigator;
+    Button1: TButton;
+    DBEdit10: TDBEdit;
+    procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
+    procedure MaskEdit1Change(Sender: TObject);
+    procedure DBEdit9Change(Sender: TObject);
+    procedure TabSheet1Show(Sender: TObject);
+    procedure MaskEdit4Change(Sender: TObject);
+    procedure MaskEdit5Change(Sender: TObject);
+    procedure DBEdit6Change(Sender: TObject);
+    procedure DBEdit7Change(Sender: TObject);
+    procedure MaskEdit5Exit(Sender: TObject);
+    procedure MaskEdit4Exit(Sender: TObject);
+    procedure DBComboBox2Change(Sender: TObject);
+    procedure DBComboBox4Exit(Sender: TObject);
+    procedure DBComboBox3Click(Sender: TObject);
+    procedure TabSheet3Show(Sender: TObject);
+    procedure TabSheet2Show(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure DBComboBox3Exit(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmDvpf: TfrmDvpf;
+
+implementation
+
+uses UnitDM, UnitPrincipal;
+
+
+{$R *.dfm}
+
+procedure TfrmDvpf.BitBtn4Click(Sender: TObject);
+begin
+BitBtn4.Enabled := False;
+PageControl1.ActivePage := TabSheet1;
+BitBtn5.Enabled := False;
+BitBtn6.Enabled := False;
+DM.TDVPF.Append;
+DBComboBox3.SetFocus;
+end;
+
+procedure TfrmDvpf.BitBtn5Click(Sender: TObject);
+begin
+DM.TDVPF.Open;
+if DM.TDVPF.RecordCount = 0 then
+begin
+DM.TDVPF.Close;
+Application.MessageBox('Não hà Clientes para serem Excluídos!', 'Alteração', mb_Ok + mb_IconInformation);
+end;
+
+DM.TDVPF.Open;
+if DM.TDVPF.RecordCount <> 0 then
+begin
+If Application.MessageBox('Confirma Exclusão desta DVPF?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+DM.TDVPF.Delete;
+DM.TDVPF.Refresh;
+end;
+end;
+end;
+
+procedure TfrmDvpf.BitBtn1Click(Sender: TObject);
+begin
+	if DBEdit2.Text='' then
+   	begin
+         Application.MessageBox('Vendedor deve ser informado!', 'Cadastro', mb_Ok + mb_IconInformation);
+         DBEdit2.SetFocus;
+    end
+    else
+begin
+	if DBComboBox3.Text='' then
+   	begin
+         Application.MessageBox('Tipo de Vendedor deve ser informado!', 'Cadastro', mb_Ok + mb_IconInformation);
+         DBComboBox3.SetFocus;
+    end
+    else
+begin
+	if DBComboBox2.Text='' then
+   	begin
+         Application.MessageBox('Tipo de Autorização deve ser informado!', 'Cadastro', mb_Ok + mb_IconInformation);
+         DBComboBox2.SetFocus;
+    end
+    else
+begin
+	if DBEdit4.Text='' then
+   	begin
+         Application.MessageBox('Numero da Autorização deve ser informado!', 'Cadastro', mb_Ok + mb_IconInformation);
+         DBEdit4.SetFocus;
+    end
+    else
+begin
+	if MaskEdit1.Text='' then
+   	begin
+         Application.MessageBox('Validade deve ser informado!', 'Cadastro', mb_Ok + mb_IconInformation);
+         MaskEdit1.SetFocus;
+    end
+    else
+begin
+	if DBEdit11.Text='' then
+   	begin
+         Application.MessageBox('Propriedade deve ser informada!', 'Cadastro', mb_Ok + mb_IconInformation);
+         DBEdit11.SetFocus;
+    end
+    else
+begin
+	if DBEdit5.Text='' then
+   	begin
+         Application.MessageBox('Municipio deve ser informada!', 'Cadastro', mb_Ok + mb_IconInformation);
+         DBEdit5.SetFocus;
+    end
+    else
+begin
+	if DBComboBox4.Text='' then
+   	begin
+         Application.MessageBox('UF deve ser informada!', 'Cadastro', mb_Ok + mb_IconInformation);
+         DBComboBox4.SetFocus;
+    end
+    end;
+    end;
+    end;
+    end;
+    end;
+    end;
+    end;
+
+if (DBEDIT2.Text <> '') and (DBComboBox3.Text <> '') and (DBComboBox2.Text <> '') and (DBEdit4.Text <> '') and (MaskEdit1.Text <> '')and (DBEdit11.Text <> '')and (DBEdit5.Text <> '')and (DBComboBox4.Text <> '') then
+begin
+If Application.MessageBox('Confirma a Inclusão/Alteração?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+  try
+    DM.TDVPF.Post;
+    DM.TDVPF.Refresh;
+    If Application.MessageBox('Continua Cadastramento?', 'Confirmação',
+    mb_YesNo + mb_ICONQUESTION) = idYes then
+    DM.TDVPF.Append
+  except
+    Application.MessageBox('DVPF já Cadastrada!', 'DVPF', mb_Ok + mb_IconExclamation);
+  end;
+  PageControl1.ActivePage := TabSheet1;
+  DBEdit2.SetFocus;
+  BitBtn5.Enabled := True;
+  BitBtn6.Enabled := True;
+  end
+  else
+  PageControl1.ActivePage := TabSheet1;
+  DBEdit2.SetFocus;
+  end
+end;
+
+procedure TfrmDvpf.BitBtn2Click(Sender: TObject);
+begin
+DM.TDVPF.Cancel;
+BitBtn4.Enabled := True;
+BitBtn5.Enabled := True;
+BitBtn6.Enabled := True;
+PageControl1.ActivePage := TabSheet1;
+DBEdit2.SetFocus;
+end;
+ 
+procedure TfrmDvpf.BitBtn3Click(Sender: TObject);
+begin
+DM.TDVPF.Close;
+DM.TVolume.Close;
+DM.QEssencia.Close;
+Close;
+end;
+
+procedure TfrmDvpf.Edit1Change(Sender: TObject);
+begin
+DM.TDVPF.Locate('NOMEVENDEDOR',Edit1.text,[lopartialkey,locaseinsensitive]);
+end;
+
+procedure TfrmDvpf.FormShow(Sender: TObject);
+begin
+PageControl1.ActivePage := TabSheet1;
+Label1.Caption := 'Cadastro de DVPF';
+DBComboBox3.SetFocus;
+DM.TDVPF.Open;
+DM.TVolume.Open;
+  with DM.QEssencia do
+  	begin
+               Close;
+               SQL.Clear;
+               SQL.Add('Select * from ESSENCIA Order by ESSENCIA');
+               Open;
+    end;
+end;
+
+procedure TfrmDvpf.BitBtn7Click(Sender: TObject);
+begin
+Label1.Caption := 'Cadastro de DVPF';
+PageControl1.ActivePage := TabSheet1;
+BitBtn7.Visible := False;
+BitBtn6.Visible := True;
+DBEdit2.SetFocus;
+end;
+
+procedure TfrmDvpf.BitBtn6Click(Sender: TObject);
+begin
+if DM.TDVPF.RecordCount = 0 then
+begin
+Application.MessageBox('Não hà DVPF cadastrada para pesquisa!', 'Pesquisa', mb_Ok + mb_IconInformation);
+DBEdit2.SetFocus;
+end
+else
+begin
+Label1.Caption := 'Pesquisa de DVPF';
+PageControl1.ActivePage := TabSheet2;
+BitBtn6.Visible := False;
+BitBtn7.Visible := True;
+Edit1.SetFocus;
+end;
+end;
+
+procedure TfrmDvpf.MaskEdit1Change(Sender: TObject);
+begin
+DBEdit9.Text := MaskEdit1.Text; 
+end;
+
+procedure TfrmDvpf.DBEdit9Change(Sender: TObject);
+begin
+MaskEdit1.Text := DBEdit9.Text; 
+end;
+
+procedure TfrmDvpf.TabSheet1Show(Sender: TObject);
+begin
+DBN2.Visible := False;
+Label1.Caption := 'Cadastro de DVPF';
+DBComboBox3.SetFocus;
+BitBtn7.Visible := False;
+BitBtn6.Visible := True;
+end;
+
+procedure TfrmDvpf.MaskEdit4Change(Sender: TObject);
+begin
+DBEdit6.Text := MaskEdit4.Text; 
+end;
+
+procedure TfrmDvpf.MaskEdit5Change(Sender: TObject);
+begin
+DBEdit7.Text := MaskEdit5.Text;
+end;
+
+procedure TfrmDvpf.DBEdit6Change(Sender: TObject);
+begin
+MaskEdit4.Text := DBEdit6.Text; 
+end;
+
+procedure TfrmDvpf.DBEdit7Change(Sender: TObject);
+begin
+MaskEdit5.Text := DBEdit7.Text;
+end;
+
+procedure TfrmDvpf.MaskEdit5Exit(Sender: TObject);
+begin
+Application.MessageBox('CPF inválido ou digitado incorretamente, Verefique!', 'Informação', mb_Ok + mb_IconInformation);
+end;
+
+procedure TfrmDvpf.MaskEdit4Exit(Sender: TObject);
+begin
+Application.MessageBox('CNPJ inválido ou digitado incorretamente, Verefique!', 'Informação', mb_Ok + mb_IconInformation);
+end;
+
+procedure TfrmDvpf.DBComboBox2Change(Sender: TObject);
+begin
+if DBComboBox2.Text = '' then
+begin
+DBEdit4.Enabled := False;
+MaskEdit1.Enabled := False;
+DBEdit8.SetFocus;
+end
+else
+begin
+if DBComboBox2.Text = 'DESMATE' then
+begin
+DBEdit4.Enabled := True;
+MaskEdit1.Enabled := True;
+end
+else
+begin
+if DBComboBox2.Text = 'MANEJO' then
+begin
+DBEdit4.Enabled := False;
+MaskEdit1.Enabled := False;
+end;
+end;
+end;
+end;
+
+procedure TfrmDvpf.DBComboBox4Exit(Sender: TObject);
+begin
+PageControl1.ActivePage := TabSheet3;
+B.SetFocus;
+end;
+
+procedure TfrmDvpf.DBComboBox3Click(Sender: TObject);
+begin
+if DBComboBox3.Text = '' then
+begin
+MaskEdit4.Clear;
+MaskEdit5.Clear;
+MaskEdit4.Enabled := False;
+MaskEdit5.Enabled := False;
+end
+else
+begin
+if DBComboBox3.Text = 'PESSOA JURÍDICA' then
+begin
+MaskEdit5.Clear;
+MaskEdit5.Enabled := False;
+MaskEdit4.Enabled := True;
+MaskEdit4.SetFocus;
+end
+else
+begin
+if DBComboBox3.Text = 'PESSOA FÍSICA' then
+begin
+MaskEdit5.Enabled := True;
+MaskEdit5.SetFocus;
+MaskEdit4.Clear;
+MaskEdit4.Enabled := False;
+end;
+end;
+end;
+end;
+
+procedure TfrmDvpf.TabSheet3Show(Sender: TObject);
+begin
+DBN2.Visible := True;
+Label1.Caption := 'Cadastro de Essência(s)';
+end;
+
+procedure TfrmDvpf.TabSheet2Show(Sender: TObject);
+begin
+DBN1.Visible := True;
+Label1.Caption := 'Pesquisa';
+BitBtn7.Visible := True;
+BitBtn6.Visible := False;
+end;
+
+procedure TfrmDvpf.Button1Click(Sender: TObject);
+var total : Real;
+begin
+    DM.TVolume.Edit;
+   total := 0;
+    DM.TVolume.First;
+   while not DM.TVolume.Eof do
+     begin
+        total := DM.TVolume['VOLUME'] + total ;
+        DM.TVolume.Next;
+     end;
+    frmdvpf.Label2.Text := FormatCurr('#0.000',total);
+    DM.TVolume.First;
+    DM.TVolume.Post;
+        DM.TVolume.Refresh;
+end;
+
+procedure TfrmDvpf.DBComboBox3Exit(Sender: TObject);
+begin
+if DBComboBox3.Text = '2-PESSOA JURÍDICA' then
+begin
+MaskEdit4.Enabled := True;
+MaskEdit5.Clear;
+MaskEdit5.Enabled := False;
+end
+else
+begin
+if DBComboBox3.Text = '1-PESSOA FÍSICA' then
+begin
+MaskEdit5.Enabled := True;
+MaskEdit4.Clear;
+MaskEdit4.Enabled := False;
+end;
+end;
+end;
+
+end.

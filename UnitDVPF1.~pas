@@ -1,0 +1,253 @@
+unit UnitDVPF1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ImgList, ComCtrls, ToolWin, StdCtrls, DBCtrls, Mask,
+  EDBZero, ExtCtrls, Buttons, Grids, DBGrids, DB, IBCustomDataSet, IBTable,
+  EChkCPF, EChkCNPJ, EDBNum;
+
+type
+  TfrmDvpf1 = class(TForm)
+    Image1: TImage;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    DBNavigator1: TDBNavigator;
+    BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
+    BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    Panel6: TPanel;
+    Panel7: TPanel;
+    Label1: TLabel;
+    GroupBox1: TGroupBox;
+    Edit1: TEdit;
+    DBGrid1: TDBGrid;
+    Panel17: TPanel;
+    ImageList1: TImageList;
+    s: TDBGrid;
+    Panel5: TPanel;
+    B: TDBLookupComboBox;
+    E: TDBEdit;
+    D: TDBComboBox;
+    C: TEvDBNumEdit;
+    label2: TEvDBNumEdit;
+    DBEdit1: TDBEdit;
+    procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
+    procedure TabSheet1Show(Sender: TObject);
+    procedure MaskEdit5Exit(Sender: TObject);
+    procedure MaskEdit4Exit(Sender: TObject);
+    procedure EExit(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmDvpf1: TfrmDvpf1;
+
+implementation
+
+uses UnitDM, UnitPrincipal;
+
+
+{$R *.dfm}
+
+procedure TfrmDvpf1.BitBtn4Click(Sender: TObject);
+begin
+BitBtn4.Enabled := False;
+PageControl1.ActivePage := TabSheet1;
+BitBtn5.Enabled := False;
+BitBtn6.Enabled := False;
+end;
+
+procedure TfrmDvpf1.BitBtn5Click(Sender: TObject);
+begin
+if DM.TVolume.RecordCount = 0 then
+begin
+DM.TVolume.Close;
+Application.MessageBox('Não hà movimentação para ser Excluída!', 'Alteração', mb_Ok + mb_IconInformation);
+end;
+
+DM.TVolume.Open;
+if DM.TVolume.RecordCount <> 0 then
+begin
+If Application.MessageBox('Confirma Exclusão deste Volume?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+DM.TVolume.Delete;
+DM.TVolume.Refresh;
+end;
+end;
+end;
+
+procedure TfrmDvpf1.BitBtn1Click(Sender: TObject);
+begin
+	if B.Text='' then
+   	begin
+         Application.MessageBox('Essência deve ser informada!', 'Cadastro', mb_Ok + mb_IconInformation);
+         B.SetFocus;
+    end
+    else
+begin
+	if C.Text='' then
+   	begin
+         Application.MessageBox('Volume deve ser informado!', 'Cadastro', mb_Ok + mb_IconInformation);
+         C.SetFocus;
+    end
+    else
+begin
+	if D.Text='' then
+   	begin
+         Application.MessageBox('Matéria Prima deve ser informada!', 'Cadastro', mb_Ok + mb_IconInformation);
+         D.SetFocus;
+    end
+    else
+begin
+	if E.Text='' then
+   	begin
+         Application.MessageBox('Destino deve ser informado!', 'Cadastro', mb_Ok + mb_IconInformation);
+         E.SetFocus;
+    end
+    end;
+    end;
+    end;
+
+if (B.Text <> '') and (C.Text <> '') and (D.Text <> '') and (E.Text <> '') then
+begin
+If Application.MessageBox('Confirma a Inclusão/Alteração?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+    DM.TVolume.Post;
+    DM.TVolume.Refresh;
+    If Application.MessageBox('Continua Cadastramento?', 'Confirmação',
+    mb_YesNo + mb_ICONQUESTION) = idYes then
+    DM.TVolume.Append;
+    DM.TTOTAL.Edit
+    end;
+    PageControl1.ActivePage := TabSheet1;
+    BitBtn5.Enabled := True;
+    BitBtn6.Enabled := True;
+    end
+    else
+    PageControl1.ActivePage := TabSheet1;
+end;
+
+procedure TfrmDvpf1.BitBtn2Click(Sender: TObject);
+begin
+DM.TVolume.Cancel;
+BitBtn4.Enabled := True;
+BitBtn5.Enabled := True;
+BitBtn6.Enabled := True;
+PageControl1.ActivePage := TabSheet1;
+end;
+ 
+procedure TfrmDvpf1.BitBtn3Click(Sender: TObject);
+begin
+DM.TVolume.Close;
+DM.QDVPF.Close;
+DM.QEssencia.Close;
+DM.TTOTAL.Close;
+DM.TDVPF.Close;
+Close;
+end;
+
+procedure TfrmDvpf1.Edit1Change(Sender: TObject);
+begin
+DM.TDVPF.Locate('NOMEVENDEDOR',Edit1.text,[lopartialkey,locaseinsensitive]);
+end;
+
+procedure TfrmDvpf1.FormShow(Sender: TObject);
+begin
+PageControl1.ActivePage := TabSheet1;
+Label1.Caption := 'Cadastro de DVPF';
+DM.TVolume.Close;
+DM.QDVPF.Close;
+DM.QEssencia.Close;
+DM.TTOTAL.Close;
+DM.TDVPF.Close;
+
+DM.TVolume.Open;
+DM.QDVPF.Open;
+DM.QEssencia.Open;
+DM.TTOTAL.Open;
+DM.TDVPF.Open;
+
+DM.TVolume.Edit;
+DM.TTOTAL.Edit;
+
+  with DM.QEssencia do
+  	begin
+               Close;
+               SQL.Clear;
+               SQL.Add('Select * from ESSENCIA Order by ESSENCIA');
+               Open;
+    end;
+end;
+
+procedure TfrmDvpf1.BitBtn7Click(Sender: TObject);
+begin
+Label1.Caption := 'Cadastro de Volume';
+PageControl1.ActivePage := TabSheet1;
+BitBtn7.Visible := False;
+BitBtn6.Visible := True;
+end;
+
+procedure TfrmDvpf1.BitBtn6Click(Sender: TObject);
+begin
+if DM.TVolume.RecordCount = 0 then
+begin
+Application.MessageBox('Não hà Volume cadastrado para pesquisa!', 'Pesquisa', mb_Ok + mb_IconInformation);
+end
+else
+begin
+Label1.Caption := 'Pesquisa de Volume';
+PageControl1.ActivePage := TabSheet2;
+BitBtn6.Visible := False;
+BitBtn7.Visible := True;
+Edit1.SetFocus;
+end;
+end;
+
+procedure TfrmDvpf1.TabSheet1Show(Sender: TObject);
+begin
+Label1.Caption := 'Cadastro de DVPF';
+BitBtn7.Visible := False;
+BitBtn6.Visible := True;
+end;
+
+procedure TfrmDvpf1.MaskEdit5Exit(Sender: TObject);
+begin
+Application.MessageBox('CPF inválido ou digitado incorretamente, Verefique!', 'Informação', mb_Ok + mb_IconInformation);
+end;
+
+procedure TfrmDvpf1.MaskEdit4Exit(Sender: TObject);
+begin
+Application.MessageBox('CNPJ inválido ou digitado incorretamente, Verefique!', 'Informação', mb_Ok + mb_IconInformation);
+end;
+
+procedure TfrmDvpf1.EExit(Sender: TObject);
+BEGIN
+    BITBTN1.Click;
+end;
+
+end.

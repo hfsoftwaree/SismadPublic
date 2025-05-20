@@ -1,0 +1,222 @@
+unit UnitEssencia;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Mask, DBCtrls, ExtCtrls, ComCtrls, ImgList, Buttons,
+  Grids, DBGrids, DB, DBTables, DBXpress, FMTBcd, DBClient, Provider,
+  SqlExpr;
+
+type
+  TfrmEssencia = class(TForm)
+    Panel2: TPanel;
+    Label2: TLabel;
+    DBEdit1: TDBEdit;
+    DBEdit2: TDBEdit;
+    Panel3: TPanel;
+    DBGrid1: TDBGrid;
+    Edit1: TEdit;
+    Label3: TLabel;
+    Panel4: TPanel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    DBNavigator1: TDBNavigator;
+    BitBtn4: TBitBtn;
+    BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
+    Image1: TImage;
+    Label1: TLabel;
+    BitBtn5: TBitBtn;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure DBEdit2KeyPress(Sender: TObject; var Key: Char);
+    procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmEssencia: TfrmEssencia;
+
+
+implementation
+
+uses UnitPrincipal, UnitDM;
+
+
+{$R *.dfm}
+
+
+procedure TfrmEssencia.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+frmPrincipal.EvKeyNavigator1.Active := True;
+end;
+
+
+procedure TfrmEssencia.FormShow(Sender: TObject);
+begin
+frmPrincipal.EvKeyNavigator1.Active := False;
+Label1.Caption := 'Cadastro de Essência';
+DBEdit2.SetFocus;
+DM.TEssencia.Open;
+DM.TEssencia.Refresh;
+DM.TEssencia.IndexName := ('INDESSENCIA');
+DM.TEssencia.First;
+DM.TEssencia.Edit;
+end;
+
+procedure TfrmEssencia.Edit1Change(Sender: TObject);
+begin
+DM.TEssencia.Locate('ESSENCIA',Edit1.text,[lopartialkey,locaseinsensitive]);
+end;
+
+procedure TfrmEssencia.DBEdit2KeyPress(Sender: TObject; var Key: Char);
+begin
+  if key = #13 then
+  bitbtn1.Click;
+end;
+
+procedure TfrmEssencia.BitBtn4Click(Sender: TObject);
+begin
+DBEdit2.SetFocus;
+DM.TEssencia.Append;
+BitBtn4.Enabled := False;
+BitBtn6.Enabled := False;
+BitBtn3.Enabled := False;
+end;
+
+procedure TfrmEssencia.BitBtn1Click(Sender: TObject);
+begin
+if DBEDIT2.Text = '' then
+begin
+Application.MessageBox('Essência deve ser informada!', 'Inscrições', mb_Ok + mb_IconInformation);
+DBEdit2.SetFocus;
+end;
+if (DBEDIT2.Text <> '')  then
+begin
+If Application.MessageBox('Confirma Inclusão?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+  try
+    DM.TEssencia.Post;
+    DM.TEssencia.Refresh;
+    If Application.MessageBox('Gostaria de incluir outra Essência?', 'Confirmação',
+    mb_YesNo + mb_ICONQUESTION) = idYes then
+    begin
+    DM.TEssencia.Append;
+    BitBtn4.Enabled := False;
+    BitBtn6.Enabled := False;
+    BitBtn3.Enabled := False;
+    end
+    else
+    begin
+    BitBtn4.Enabled := true;
+    BitBtn6.Enabled := true;
+    BitBtn3.Enabled := true;
+    end;
+  except
+    Application.MessageBox('Essência já Cadastrada!', 'Essência', mb_Ok + mb_IconExclamation);
+    DBEdit2.Clear;
+  end;
+  end;
+end;
+end;
+
+procedure TfrmEssencia.BitBtn2Click(Sender: TObject);
+begin
+DBEdit2.SetFocus;
+DM.TEssencia.Cancel;
+BitBtn4.Enabled := true;
+BitBtn6.Enabled := true;
+BitBtn3.Enabled := true;
+end;
+
+procedure TfrmEssencia.BitBtn7Click(Sender: TObject);
+begin
+Label1.Caption := 'Cadastro de Essência';
+Bitbtn7.Visible := False;
+Bitbtn6.Visible := True;
+Label3.Visible := False;
+Edit1.Clear;
+Edit1.Visible := False;
+Label2.Visible := True;
+DBEdit2.Visible := True;
+DBEdit2.SetFocus;
+end;
+
+procedure TfrmEssencia.BitBtn6Click(Sender: TObject);
+begin
+if DM.TEssencia.RecordCount <> 0 then
+begin
+Label1.Caption := 'Pesquisa de Essência';
+Bitbtn6.Visible := False;
+Bitbtn7.Visible := True;
+Label2.Visible := False;
+DBEdit2.Visible := False;
+Label3.Visible := True;
+Edit1.Visible := True;
+Edit1.Clear;
+Edit1.SetFocus;
+end
+else
+begin
+if DM.TEssencia.RecordCount = 0 then
+begin
+Application.MessageBox('Não há Essência cadastrada para pesquisa!', 'Informação', mb_Ok + mb_IconExclamation);
+DBEdit2.SetFocus;
+end;
+end;
+end;
+
+procedure TfrmEssencia.BitBtn3Click(Sender: TObject);
+begin
+Label1.Caption := 'Cadastro de Essência';
+Label3.Visible := False;
+Edit1.Clear;
+Edit1.Visible := False;
+Label2.Visible := True;
+DBEdit2.Visible := True;
+Bitbtn7.Visible := False;
+Bitbtn6.Visible := True;
+DM.TEssencia.Cancel;
+DM.TEssencia.Close;
+Close;
+end;
+
+procedure TfrmEssencia.BitBtn5Click(Sender: TObject);
+begin
+DM.Tessencia.Open;
+if DM.TEssencia.RecordCount = 0 then
+begin
+DM.TEssencia.Close;
+Application.MessageBox('Não hà Essência para ser Excluída!', 'Informação', mb_Ok + mb_IconInformation);
+end;
+
+DM.TEssencia.Open;
+if DM.TEssencia.RecordCount <> 0 then
+begin
+If Application.MessageBox('Confirma Exclusão desta essência?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+DM.TEssencia.Delete;
+DM.TEssencia.Refresh;
+end;
+end;
+end;
+
+
+
+end.

@@ -1,0 +1,213 @@
+unit UnitConsultaEPatio;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Mask, EDBNum, DBCtrls, ExtCtrls, Buttons, DB,
+  IBCustomDataSet, IBTable, jpeg;
+
+type
+  TfrmConsultaEPatio = class(TForm)
+    Panel1: TPanel;
+    Label1: TLabel;
+    Bevel2: TBevel;
+    ESTOQUE: TLabel;
+    Bevel1: TBevel;
+    GroupBox1: TGroupBox;
+    Essencia: TDBLookupComboBox;
+    BitBtn1: TBitBtn;
+    BitBtn3: TBitBtn;
+    Tipo: TRadioGroup;
+    Label4: TLabel;
+    TENTRADA1: TLabel;
+    Edit1: TEdit;
+    Label3: TLabel;
+    TSERRADO: TLabel;
+    FATOR: TDBEdit;
+    CODIGOFATOR: TEdit;
+    Image1: TImage;
+    procedure TipoClick(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure EssenciaClick(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmConsultaEPatio: TfrmConsultaEPatio;
+
+implementation
+
+uses UnitDM, UnitPrincipal, UnitCalculator;
+
+{$R *.dfm}
+
+procedure TfrmConsultaEPatio.TipoClick(Sender: TObject);
+begin
+   case (Tipo.ItemIndex) of
+     0: Begin
+            DM.TEssencia.Open;
+            DM.TEssencia.IndexFieldNames := 'ESSENCIA';
+            Essencia.Enabled := True;
+            Essencia.SetFocus;
+            Essencia.DropDown;
+        end;
+
+     1: Begin
+            DM.TEssencia.Close;     
+            Essencia.Enabled := False;
+        end;
+   end
+end;
+
+procedure TfrmConsultaEPatio.BitBtn3Click(Sender: TObject);
+var vn1, vn2, vn3, vn4, vn5, vn6, vsoma, vsoma1 : Real;
+var total, total1, total2, total3, total4  : Real;
+begin
+   if Tipo.ItemIndex = -1 then
+      Begin
+          Application.MessageBox('Tipo de Consulta deve ser informada!', 'Consulta', mb_Ok + mb_IconInformation);
+      end;
+
+if Tipo.ItemIndex <> -1 then
+begin
+   case (Tipo.ItemIndex) of
+      0: Begin
+//        EINICIAL1.Caption := EINICIAL.Text;
+
+        DM.TEntrada_Discriminacao.Filtered := False;
+        DM.TEntrada_Discriminacao.Close;
+        DM.TEntrada_Discriminacao.Filter := 'CODIGOESSENCIA = ' + (edit1.Text);
+        DM.TEntrada_Discriminacao.Filtered := True;
+        DM.TEntrada_Discriminacao.Open;
+
+        if DM.TEntrada_Discriminacao.RecordCount = 0 then
+        begin
+        TENTRADA1.Caption := '0,0000';
+        end
+        else
+        total2 := 0;
+        DM.TEntrada_discriminacao.First;
+        while not DM.TEntrada_discriminacao.Eof  do
+        begin
+        total2 := DM.TEntrada_discriminacao['QUANTIDADE'] + total2;
+        DM.TEntrada_discriminacao.Next;
+        TENTRADA1.Caption := FormatCurr('#0.0000',total2);
+        end;
+
+        DM.TPRODUCAO.Filtered := False;
+        DM.TPRODUCAO.Close;
+        DM.TPRODUCAO.Filter := 'CODIGOESSENCIA = ' + (edit1.Text);
+        DM.TPRODUCAO.Filtered := True;
+        DM.TPRODUCAO.Open;
+
+        if DM.TPRODUCAO.RecordCount = 0 then
+        begin
+        TSERRADO.Caption := '0,0000';
+        end
+        else
+        total4 := 0;
+        DM.TPRODUCAO.First;
+        while not DM.TPRODUCAO.Eof  do
+        begin
+        total4 := DM.TPRODUCAO['QTORA'] + total4;
+        DM.TPRODUCAO.Next;
+//        DM.QProduto.Open;
+//        DM.QProduto.Locate('GRAUIND',CODIGOFATOR.text,[lopartialkey,locaseinsensitive]);
+        TSERRADO.Caption := FormatCurr('#0.0000',total4);
+        end;
+
+        vn4:=0;
+        vn6:=0;
+        vsoma1:=0;
+        vn4:= StrToFloat(TENTRADA1.Caption);
+        vn6:= StrToFloat(TSERRADO.Caption);
+        vsoma1 := vn4 - vn6;
+        ESTOQUE.Caption := FloatToStr(vsoma1);
+        ESTOQUE.Caption := FormatCurr('#0.0000',vsoma1);
+        end;
+
+      1: Begin
+
+        DM.TEntrada_Discriminacao.Filtered := False;
+        DM.TEntrada_Discriminacao.Close;
+        DM.TEntrada_discriminacao.Open;
+        if DM.TEntrada_discriminacao.RecordCount = 0 then
+        begin
+        TENTRADA1.Caption := '0,0000';
+        end
+        else
+        total1 := 0;
+        DM.TEntrada_discriminacao.First;
+        while not DM.TEntrada_discriminacao.Eof do
+        begin
+        total1 := DM.TEntrada_discriminacao['QUANTIDADE'] + total1;
+        DM.TEntrada_discriminacao.Next;
+        TENTRADA1.Caption := FormatCurr('#0.0000',total1);
+        end;
+
+        DM.TPRODUCAO.Filtered := False;
+        DM.TPRODUCAO.Close;
+        DM.TPRODUCAO.Open;
+        if DM.TPRODUCAO.RecordCount = 0 then
+        begin
+        TSERRADO.Caption := '0,0000';
+        end
+        else
+        total3 := 0;
+        DM.TPRODUCAO.First;
+        while not DM.TPRODUCAO.Eof do
+        begin
+        total3 := DM.TPRODUCAO['QTORA'] + total3;
+        DM.TPRODUCAO.Next;
+//        DM.QProduto.Open;
+//        DM.QProduto.Locate('GRAUIND',CODIGOFATOR.text,[lopartialkey,locaseinsensitive]);
+        TSERRADO.Caption := FormatCurr('#0.0000',total3);
+        end;
+
+        vn2:=0;
+        vn5:=0;
+        vsoma:=0;
+        vn2:= StrToFloat(TENTRADA1.Caption);
+        vn5:= StrToFloat(TSERRADO.Caption);
+        vsoma := vn2 - vn5;
+        ESTOQUE.Caption := FloatToStr(vsoma);
+        ESTOQUE.Caption := FormatCurr('#0.0000',vsoma);
+        end;
+end;
+end;
+end;
+
+procedure TfrmConsultaEPatio.BitBtn1Click(Sender: TObject);
+begin
+DM.TEntrada_Discriminacao.Filtered := False;
+DM.TPRODUCAO.Filtered := False;
+TENTRADA1.Caption := '';
+TSERRADO.Caption := '';
+DM.QProduto.Close;;
+DM.QEssencia.Close;
+DM.TEssencia.Cancel;
+DM.TEssencia.Close;
+DM.TPRODUCAO.Close;
+DM.TEntrada_Discriminacao.Close;
+Tipo.ItemIndex := -1;
+ESTOQUE.Caption := '';
+Close;
+end;
+
+procedure TfrmConsultaEPatio.EssenciaClick(Sender: TObject);
+begin
+edit1.Text := DM.TEssencia['CODIGO'];
+end;
+
+
+
+
+
+
+end.

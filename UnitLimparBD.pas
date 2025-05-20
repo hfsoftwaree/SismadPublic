@@ -1,0 +1,96 @@
+unit UnitLimparBD;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, CJVBlinkLabel, ExtCtrls, DB, ComCtrls, Gauges;
+
+type
+  TfrmLimparBD = class(TForm)
+    Panel1: TPanel;
+    CJVBlinkLabel1: TCJVBlinkLabel;
+    Panel2: TPanel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    RichEdit1: TRichEdit;
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmLimparBD: TfrmLimparBD;
+
+implementation
+
+uses UnitDM;
+
+{$R *.dfm}
+procedure tbDBDeleteAll(const DataSet: TDataSet);
+begin
+  with DataSet do
+  while RecordCount > 0 do
+  Delete;
+end;
+
+procedure TfrmLimparBD.BitBtn2Click(Sender: TObject);
+begin
+DM.TFornecedor.CLOSE;
+close;
+end;
+
+procedure TfrmLimparBD.BitBtn1Click(Sender: TObject);
+begin
+DM.TManutencao.Open;
+DM.TFornecedor.Open;
+DM.TCredor.Open;
+DM.TESDISCRIMINACAO.Open;
+DM.TSaida_Discriminacao.Open;
+
+If Application.MessageBox('Ao confirmar, todos os lançamentos registrados até a presente data serão excluídos, Confirma limpeza do Banco de Dados?', 'Confirmação',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+   tbDBDeleteAll(DM.Tmanutencao);
+   IF dm.Tmanutencao.RecordCount = 0 then
+   begin
+   Application.MessageBox('Tabela Manutenção limpa com Sucesso!', 'Informação', mb_Ok + mb_IconInformation);
+   end;
+
+   tbDBDeleteAll(DM.Tfornecedor);
+   IF dm.TFornecedor.RecordCount = 0 then
+   begin
+   Application.MessageBox('Tabela Fornecedor limpa com Sucesso!', 'Informação', mb_Ok + mb_IconInformation);
+   end;
+
+   tbDBDeleteAll(DM.Tcredor);
+   IF dm.Tcredor.RecordCount = 0 then
+   begin
+   Application.MessageBox('Tabela Clientes limpa com Sucesso!', 'Informação', mb_Ok + mb_IconInformation);
+   end;
+
+   tbDBDeleteAll(DM.TESDISCRIMINACAO);
+   IF DM.TESDISCRIMINACAO.RecordCount = 0 then
+   begin
+   Application.MessageBox('Tabela Entrada limpa com Sucesso!', 'Informação', mb_Ok + mb_IconInformation);
+   end;
+
+   tbDBDeleteAll(DM.TSaida_Discriminacao);
+   IF DM.TSaida_Discriminacao.RecordCount = 0 then
+   begin
+   Application.MessageBox('Tabela Saida limpa com Sucesso!', 'Informação', mb_Ok + mb_IconInformation);
+   end;
+
+   tbDBDeleteAll(DM.TSAIDAFECHAMENTO);
+   IF DM.TSAIDAFECHAMENTO.RecordCount = 0 then
+   begin
+   Application.MessageBox('Tabela Fechamento limpa com Sucesso!', 'Informação', mb_Ok + mb_IconInformation);
+   end;
+   END;
+
+end;
+
+end.

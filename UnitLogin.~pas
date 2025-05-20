@@ -1,0 +1,123 @@
+unit UnitLogin;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, ExtCtrls, jpeg, DB, IBCustomDataSet, IBTable,Registry ;
+
+type
+  TfrmLogin = class(TForm)
+    Panel1: TPanel;
+    Bevel1: TBevel;
+    Panel2: TPanel;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    GroupBox1: TGroupBox;
+    edusuario: TEdit;
+    edsenha: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Image2: TImage;
+    Label3: TLabel;
+    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  procedure ValidarBasedeDados;    
+  public
+    { Public declarations }
+  end;
+
+var
+  frmLogin: TfrmLogin;
+
+implementation
+
+uses UnitDM, UnitManutencao1, UnitPrincipal, unitconfigbd;
+type
+{ Declara um tipo registro }
+TFicha = record
+Nome: string[40];
+Nome1: string[100];
+
+end;
+
+
+{$R *.dfm}
+Procedure TfrmLogin.ValidarBasedeDados;
+var IniFile: TRegIniFile;
+    Chave: String;
+begin
+    IniFile:=TRegIniFile.Create('Software\HF Softwares');
+    chave:=IniFile.ReadString('Siscomad','CaminhoDados',chave);
+    DM.IBDatabase1.DatabaseName := (Chave)+'\BDSISCOMAD.GDB';
+    DM.IBDatabase1.Connected := true;
+end;
+
+procedure TfrmLogin.BitBtn2Click(Sender: TObject);
+begin
+if edUsuario.text = '' then
+begin
+Application.MessageBox('Usuário deve ser informado!', 'Login', mb_Ok + mb_IconExclamation);
+edusuario.SetFocus;
+end
+else
+begin
+if edsenha.text = '' then
+begin
+Application.MessageBox('Senha deve ser informada!', 'Login', mb_Ok + mb_IconExclamation);
+edsenha.SetFocus;
+end
+end;
+
+if (edusuario.Text <> '') and (edsenha.Text <> '') then
+begin
+  if not(DM.TLOGIN.locate('USUARIO',EdUsuario.text,[locaseinsensitive])) then
+    begin
+    Application.MessageBox('Usuário inválido ou digitado incorretamente, Verífique!', 'Login', mb_Ok + mb_IconError);
+    EdUsuario.clear;
+    Edusuario.setfocus;
+    end
+    else
+    begin
+      if not (EdSenha.text = DM.TLOGIN['SENHA']) then
+      begin
+      Application.MessageBox('Senha invália ou digitada incorretamente, Verífique!', 'Login', mb_Ok + mb_IconError);
+      EdSenha.clear;
+      EdSenha.setfocus;
+      end;
+      end;
+
+
+if (DM.TLOGIN.locate('USUARIO',EdUsuario.text,[LocaseInsensitive])) and (EdSenha.text = DM.TLOGIN['SENHA']) then
+      begin
+      frmPrincipal.StatusBar1.Panels[1].Text := ' Usuário: ' + edusuario.Text;
+      DM.TLOGIN.Close;
+      frmLogin.close;
+      end;
+      end;
+end;
+
+procedure TfrmLogin.BitBtn3Click(Sender: TObject);
+begin
+If Application.MessageBox('O Sistema será encerrado, Confirma?', 'Login',
+mb_YesNo + mb_ICONQUESTION) = idYes then
+begin
+DM.TLOGIN.Close;
+Application.Terminate;
+end
+else
+begin
+edusuario.SetFocus;
+end
+end;
+
+procedure TfrmLogin.FormShow(Sender: TObject);
+begin
+DM.TLOGIN.Open;
+edusuario.SetFocus;
+end;
+
+end.

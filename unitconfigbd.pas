@@ -1,0 +1,149 @@
+unit unitconfigbd;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, ExtCtrls, Mask, ToolEdit, jpeg, Registry, shellapi,
+  ComCtrls;
+
+type
+  Tfrmconfigbd = class(TForm)
+    Image1: TImage;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    server: TEdit;
+    Panel2: TPanel;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    bd: TFilenameEdit;
+    panel1: TRichEdit;
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure serverEnter(Sender: TObject);
+    procedure bdEnter(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmconfigbd: Tfrmconfigbd;
+
+implementation
+
+uses UnitLogin, UnitDM;
+type
+{ Declara um tipo registro }
+TFicha = record
+Nome: string[40];
+Nome1: string[100];
+end;
+
+procedure ExecutePrograma(Nome, Parametros: String);
+Var
+ Comando: Array[0..1024] of Char;
+ Parms: Array[0..1024] of Char;
+begin
+  StrPCopy (Comando, Nome);
+  StrPCopy (Parms, Parametros);
+  ShellExecute (0, Nil, Comando, Parms, Nil, SW_ShowNormal);
+end;
+
+
+{$R *.dfm}
+
+procedure Tfrmconfigbd.BitBtn3Click(Sender: TObject);
+begin
+close;
+end;
+
+procedure Tfrmconfigbd.BitBtn2Click(Sender: TObject);
+var
+Reg: TRegistry;
+Ficha: TFicha;
+begin
+{ Coloca alguns dados na variável Ficha }
+Ficha.Nome := server.Text;
+Ficha.Nome1 := bd.Text;
+
+Reg := TRegistry.Create;
+try
+{ Define a chave-raiz do registro }
+Reg.RootKey := HKEY_CURRENT_USER;
+{ Abre uma chave (path). Se não existir cria e abre. }
+Reg.OpenKey('Software\HF Softwares\Sismad', true);
+{ Grava os dados (o registro) }
+Reg.WriteBinaryData('banco', Ficha, SizeOf(Ficha));
+finally
+Reg.Free;
+      if Application.MessageBox('O Sistema precisa ser reiniciado para que as novas alterações entrem em vigor!', 'Confirmação',
+      mb_Ok + mb_ICONINFORMATION) = idOk then
+      begin
+        if fileexists('C:\HF-Software\Sismad\Sismad.exe') then
+        begin
+        Application.Terminate;
+        ExecutePrograma('C:\HF-Software\Sismad\Sismad.exe','');
+        end
+        else
+        begin
+        Application.MessageBox('O Sistema não foi capaz de se Auto-Reiniciar, faça-o manualmente!', 'Reinicialização',
+        mb_Ok + mb_ICONERROR);
+        Application.Terminate;
+        end
+        end
+end;
+
+
+end;
+
+procedure Tfrmconfigbd.FormCreate(Sender: TObject);
+var
+Reg: TRegistry;
+Ficha: TFicha;
+begin
+Reg := TRegistry.Create;
+try
+{ Define a chave-raiz do registro }
+Reg.RootKey := HKEY_CURRENT_USER;
+{ Se existir a chave (path)... }
+if Reg.KeyExists('Software\HF Softwares\Sismad') then
+begin
+{ Abre a chave (path) }
+  Reg.OpenKey('Software\HF Softwares\Sismad', false);
+
+  { Se existir o valor... }
+if Reg.ValueExists('banco') then
+begin
+{ Lê os dados }
+Reg.ReadBinaryData('banco', Ficha, SizeOf(Ficha));
+SERVER.Text := Ficha.Nome;
+bd.Text := Ficha.Nome1;
+  DM.IBDatabase1.DatabaseName := Ficha.Nome + ':' + Ficha.Nome1;
+  dm.IBDatabase1.Connected := true;
+  frmlogin.showmodal;
+end else
+self.ShowModal;
+end else
+self.ShowModal;
+finally
+Reg.Free;
+end;
+end;
+
+
+procedure Tfrmconfigbd.serverEnter(Sender: TObject);
+begin
+panel1.Lines.Text := 'Informe o nome do SERVIDOR ou endereço IP onde esta localizado o Banco de Dados, em caso de duvidas entre em contato com o administrador da rede ou do sistema.';
+end;
+
+procedure Tfrmconfigbd.bdEnter(Sender: TObject);
+begin
+panel1.Lines.Text  := 'Informe o caminho onde esta localizado o Banco de Dados ".GDB", em caso de duvidas entre em contato com o administrador da rede ou do sistema.';
+end;
+
+end.

@@ -1,0 +1,153 @@
+program Siscomad;
+
+uses
+  Forms,
+  UnitPrincipal in 'UnitPrincipal.pas' {frmPrincipal},
+  UnitDM in 'UnitDM.pas' {DM: TDataModule},
+  UnitEssencia in 'UnitEssencia.pas' {frmEssencia},
+  UnitCredor in 'UnitCredor.pas' {frmCredor},
+  UnitMunicipio in 'UnitMunicipio.pas' {frmMunicipio},
+  UnitProdutos in 'UnitProdutos.pas' {frmProdutos},
+  UnitInfo in 'UnitInfo.pas' {frmInfo},
+  UnitSplash in 'UnitSplash.pas' {frmSplash},
+  UnitSobre in 'UnitSobre.pas' {frmSobre},
+  UnitRepEssencia in 'UnitRepEssencia.pas' {RepEssencia},
+  UnitRepCredores in 'UnitRepCredores.pas' {RepCredores},
+  UnitRepFornecedores in 'UnitRepFornecedores.pas' {RepFornecedores},
+  UnitRepProduto in 'UnitRepProduto.pas' {RepProduto},
+  UnitRepMunicipio in 'UnitRepMunicipio.pas' {RepMunicipio},
+  UnitBackup in 'UnitBackup.pas' {frmBackup},
+  UnitRestore in 'UnitRestore.pas' {frmRestore},
+  UnitFornecedor in 'UnitFornecedor.pas' {frmFornecedores},
+  UnitSaidaMadeiras in 'UnitSaidaMadeiras.pas' {frmSaidaMadeiras},
+  UnitSaidaMadeirasProdutos in 'UnitSaidaMadeirasProdutos.pas' {frmSaidaMadeirasProdutos},
+  UnitConsultaESerrada in 'UnitConsultaESerrada.pas' {frmConsultaESerrada},
+  UnitPesquisaEntrada in 'UnitPesquisaEntrada.pas' {frmPesquisa},
+  UnitPesquisa1 in 'UnitPesquisa1.pas' {frmPesquisa1},
+  UnitPesquisa2 in 'UnitPesquisa2.pas' {frmPesquisa2},
+  UnitPesquisa3 in 'UnitPesquisa3.pas' {frmPesquisa3},
+  UnitDemo in 'UnitDemo.pas' {frmDemo},
+  UnitDemoGrafico in 'UnitDemoGrafico.pas' {frmDemoGrafico},
+  UnitDemoGrafico1 in 'UnitDemoGrafico1.pas' {frmDemoGrafico1},
+  UnitREntrada in 'UnitREntrada.pas' {frmREntrada},
+  UnitREntrada1 in 'UnitREntrada1.pas' {frmREntrada1},
+  UnitRepEntrada in 'UnitRepEntrada.pas' {RepEntrada},
+  UnitRepEntrada1 in 'UnitRepEntrada1.pas' {RepEntrada1},
+  UnitRepSaida in 'UnitRepSaida.pas' {RepSaida},
+  UnitRepSaida1 in 'UnitRepSaida1.pas' {RepSaida1},
+  UnitRSaida in 'UnitRSaida.pas' {frmRSaida},
+  UnitRSaida1 in 'UnitRSaida1.pas' {frmRSaida1},
+  UnitREstoque in 'UnitREstoque.pas' {frmREstoque},
+  UnitRepEstoque in 'UnitRepEstoque.pas' {RepEstoque},
+  UnitRepEstoque1 in 'UnitRepEstoque1.pas' {RepEstoque1},
+  UnitREstoque1 in 'UnitREstoque1.pas' {frmREstoque1},
+  UnitManutencao1 in 'UnitManutencao1.pas' {frmManutencao1},
+  UnitLogin in 'UnitLogin.pas' {frmLogin},
+  UnitAtualizacao in 'UnitAtualizacao.pas' {frmAtualizacao},
+  UnitUsuario in 'UnitUsuario.pas' {frmUsuario},
+  UnitEntradaSerrada in 'UnitEntradaSerrada.pas' {frmEntradaSerrada},
+  UnitEntradaSerradaProdutos in 'UnitEntradaSerradaProdutos.pas' {frmEntradaSerradaProdutos},
+  UnitREntrada2 in 'UnitREntrada2.pas' {frmREntrada2},
+  UnitREntrada3 in 'UnitREntrada3.pas' {frmREntrada3},
+  UnitRepEntrada2 in 'UnitRepEntrada2.pas' {RepEntrada2},
+  UnitRepEntrada3 in 'UnitRepEntrada3.pas' {RepEntrada3},
+  UnitRepCredoresCompleto in 'UnitRepCredoresCompleto.pas' {RepCredores1},
+  UnitRepRomaneioSerrada in 'UnitRepRomaneioSerrada.pas' {frmRRomaneioSerrada},
+  UnitRepRomaneioSerrada1 in 'UnitRepRomaneioSerrada1.pas' {RepRomaneioserrada},
+  Unitconfig in 'Unitconfig.pas' {frmconfig},
+  Unitromaneioserrada in 'Unitromaneioserrada.pas' {frmromaneioserrada},
+  Unitromaneioserradaprodutos in 'Unitromaneioserradaprodutos.pas' {frmromaneioSerradaProdutos},
+  Unitsubprodutos in 'Unitsubprodutos.pas' {frmsubprodutos},
+  Unitrepsubprodutos in 'Unitrepsubprodutos.pas' {Repsubproduto},
+  UnitLimparBD in 'UnitLimparBD.pas' {frmLimparBD},
+  Unitskin in 'Unitskin.pas' {frmSkin},
+  Unitconsultaproduto in 'Unitconsultaproduto.pas' {frmConsultaProduto},
+  UnitVenda in 'UnitVenda.pas' {frmVenda},
+  Unitvendaprodutos in 'Unitvendaprodutos.pas' {frmVendaProdutos},
+  UnitConsultaProduto1 in 'UnitConsultaProduto1.pas' {frmConsultaProduto1},
+  Unitvendafechamento in 'Unitvendafechamento.pas' {frmVendaFechamento},
+  unitconsultapd in 'unitconsultapd.pas' {frmconsultapd},
+  unitrepestoquepatio in 'unitrepestoquepatio.pas' {RepEstoquePatio},
+  unitrestoquepatio in 'unitrestoquepatio.pas' {frmREstoquePatio},
+  unitconfigbd in 'unitconfigbd.pas' {frmconfigbd},
+  Unitconsultaplaqueta in 'Unitconsultaplaqueta.pas' {frmConsultaPlaqueta};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.Title := 'Sismad';
+  frmsplash := Tfrmsplash.Create (application);
+  frmsplash.show;
+  frmsplash.Refresh;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TDM, DM);
+  Application.CreateForm(TfrmEssencia, frmEssencia);
+  Application.CreateForm(TfrmCredor, frmCredor);
+  Application.CreateForm(TfrmMunicipio, frmMunicipio);
+  Application.CreateForm(TfrmProdutos, frmProdutos);
+  Application.CreateForm(TfrmInfo, frmInfo);
+  Application.CreateForm(TfrmSplash, frmSplash);
+  Application.CreateForm(TfrmSobre, frmSobre);
+  Application.CreateForm(TRepEssencia, RepEssencia);
+  Application.CreateForm(TRepCredores, RepCredores);
+  Application.CreateForm(TRepFornecedores, RepFornecedores);
+  Application.CreateForm(TRepProduto, RepProduto);
+  Application.CreateForm(TRepMunicipio, RepMunicipio);
+  Application.CreateForm(TfrmBackup, frmBackup);
+  Application.CreateForm(TfrmRestore, frmRestore);
+  Application.CreateForm(TfrmFornecedores, frmFornecedores);
+  Application.CreateForm(TfrmSaidaMadeiras, frmSaidaMadeiras);
+  Application.CreateForm(TfrmSaidaMadeirasProdutos, frmSaidaMadeirasProdutos);
+  Application.CreateForm(TfrmConsultaESerrada, frmConsultaESerrada);
+  Application.CreateForm(TfrmPesquisa, frmPesquisa);
+  Application.CreateForm(TfrmPesquisa1, frmPesquisa1);
+  Application.CreateForm(TfrmPesquisa2, frmPesquisa2);
+  Application.CreateForm(TfrmPesquisa3, frmPesquisa3);
+  Application.CreateForm(TfrmDemo, frmDemo);
+  Application.CreateForm(TfrmDemoGrafico, frmDemoGrafico);
+  Application.CreateForm(TfrmDemoGrafico1, frmDemoGrafico1);
+  Application.CreateForm(TfrmREntrada, frmREntrada);
+  Application.CreateForm(TfrmREntrada1, frmREntrada1);
+  Application.CreateForm(TRepEntrada, RepEntrada);
+  Application.CreateForm(TRepEntrada1, RepEntrada1);
+  Application.CreateForm(TRepSaida, RepSaida);
+  Application.CreateForm(TRepSaida1, RepSaida1);
+  Application.CreateForm(TfrmRSaida, frmRSaida);
+  Application.CreateForm(TfrmRSaida1, frmRSaida1);
+  Application.CreateForm(TfrmREstoque, frmREstoque);
+  Application.CreateForm(TRepEstoque, RepEstoque);
+  Application.CreateForm(TRepEstoque1, RepEstoque1);
+  Application.CreateForm(TfrmREstoque1, frmREstoque1);
+  Application.CreateForm(TfrmManutencao1, frmManutencao1);
+  Application.CreateForm(TfrmLogin, frmLogin);
+  Application.CreateForm(TfrmAtualizacao, frmAtualizacao);
+  Application.CreateForm(TfrmUsuario, frmUsuario);
+  Application.CreateForm(TfrmEntradaSerrada, frmEntradaSerrada);
+  Application.CreateForm(TfrmEntradaSerradaProdutos, frmEntradaSerradaProdutos);
+  Application.CreateForm(TfrmREntrada2, frmREntrada2);
+  Application.CreateForm(TfrmREntrada3, frmREntrada3);
+  Application.CreateForm(TRepEntrada2, RepEntrada2);
+  Application.CreateForm(TRepEntrada3, RepEntrada3);
+  Application.CreateForm(TRepCredores1, RepCredores1);
+  Application.CreateForm(TfrmRRomaneioSerrada, frmRRomaneioSerrada);
+  Application.CreateForm(TRepRomaneioserrada, RepRomaneioserrada);
+  Application.CreateForm(Tfrmconfig, frmconfig);
+  Application.CreateForm(Tfrmromaneioserrada, frmromaneioserrada);
+  Application.CreateForm(TfrmromaneioSerradaProdutos, frmromaneioSerradaProdutos);
+  Application.CreateForm(Tfrmsubprodutos, frmsubprodutos);
+  Application.CreateForm(TRepsubproduto, Repsubproduto);
+  Application.CreateForm(TfrmLimparBD, frmLimparBD);
+  Application.CreateForm(TfrmSkin, frmSkin);
+  Application.CreateForm(TfrmConsultaProduto, frmConsultaProduto);
+  Application.CreateForm(TfrmVenda, frmVenda);
+  Application.CreateForm(TfrmVendaProdutos, frmVendaProdutos);
+  Application.CreateForm(TfrmConsultaProduto1, frmConsultaProduto1);
+  Application.CreateForm(TfrmVendaFechamento, frmVendaFechamento);
+  Application.CreateForm(Tfrmconsultapd, frmconsultapd);
+  Application.CreateForm(TRepEstoquePatio, RepEstoquePatio);
+  Application.CreateForm(TfrmREstoquePatio, frmREstoquePatio);
+  Application.CreateForm(Tfrmconfigbd, frmconfigbd);
+  Application.CreateForm(TfrmConsultaPlaqueta, frmConsultaPlaqueta);
+  Application.Run;
+end.
